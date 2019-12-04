@@ -3,38 +3,37 @@
 <div class="table">
 <div></div>
 <div>
-    <div v-for="i of da" v-if="i.status!=3">
-    <div class="text1">
+    <div v-for="i of da">
+    <div class="text1"  v-if="i.status!=3">
     <div class="te">{{i.name}}</div>
-    <div class="te2" v-for="j of i.property">
-    <div  class="te1">{{j.attr1}}</div>
-    <div  class="te1">{{j.attr2}}</div>
-    <div  class="te1">{{j.attr3}}</div>
-    </div>
+    <div class="te">{{i.category_name}}</div>
+    <div class="te">{{i.sale_num}}</div>
+    <div class="te">{{i.content}}</div>
     <div class="te">{{i.sort}}</div>
-    <Button type="error" style='margin-right:10px;' v-if="(i.id==null||i.status=='2')||!shan"  @click="shanc(i.id)">删除</Button>
-    <Button type="success" style='margin-right:10px;' v-if="i.status=='1'&&shan"  @click="login1(i)">修改</Button>
+    <Button type="error" style='margin-right:10px;'  v-if="(i.id==null||i.status=='2')||!shan" @click="shanc(i.id)">删除</Button>
+    <Button type="success" style='margin-right:10px;'  v-if="i.status=='1'&&shan"  @click="login1(i)">修改</Button>
     <Button type="error" v-if="i.status=='1'&&shan" @click="dele(i.id)">隐藏</Button>
     <Button type="success" v-if="i.status=='2'&&shan" @click="dele1(i.id)">回滚</Button>
-   <Button type="success" v-if="i.id==null" @click="into(1)">添加</Button>
+    <Button type="success"v-if="i.id==null" @click="loginn(1)">添加</Button>
     </div>
         <div class="text2" v-if="i.id!=null&&da2==i.id">
 <input type="text" v-model:value="name"  placeholder="名称">
-<input type="text" v-model:value="attr1"  placeholder="属性1">
-<input type="text" v-model:value="attr2"  placeholder="属性2">
-<input type="text" v-model:value="attr3"  placeholder="属性3">
+<input type="text" v-model:value="attr2"  placeholder="销量">
+<input type="text" v-model:value="attr3"  placeholder="备注">
 <input type="text" v-model:value="sort"  placeholder="排序">
     </div>
     </div>
 </div>
 <div v-if="da1==1" class="text1">
 <input type="text" v-model:value="name"  placeholder="名称">
-<input type="text" v-model:value="attr1"  placeholder="属性1">
-<input type="text" v-model:value="attr2"  placeholder="属性2">
-<input type="text" v-model:value="attr3"  placeholder="属性3">
+<select v-model:value="sid">  
+      <option v-for="j of da3" v-bind:value="j.id">{{j.name}}</option>  
+ </select>
+<input type="text" v-model:value="attr2"  placeholder="销量">
+<input type="text" v-model:value="attr3"  placeholder="备注">
 <input type="text" v-model:value="sort"  placeholder="排序">
 <input type="text" v-model:value="status"  placeholder="状态">
-<Button type="success" @click="into(2)">添加</Button>
+    <Button type="success" @click="loginn(2)">提交</Button>
 </div>
 </div>
 </div>
@@ -49,81 +48,21 @@ import Qs from 'qs'
         props: {
         },
         mounted(){
-            this.$store.state.dd=!this.$store.state.dd;
-            this.login();
+             this.$store.state.dd=!this.$store.state.dd;
+             this.login();
+            this.login4();
  },
         methods: {
-             login(){
-                axios({
-                method:'get',
-                url:this.$store.state.http+'/hello1',
-                params:{
-                },
-               responseType:'json',
-                transformResponse:(data)=> {
-                    for(var i=0;i<data.length;i++){
-                        this.da[i+1]=data[i];
-                    }
-                    for(var i=0;i<this.da.length;i++){
-                    this.da[i].property=JSON.parse("["+this.da[i].property+"]");
-                    }
-                    this.$store.state.dd=false;
-               },
-            })
-        },
-        login1(id){
-            this.$store.state.dd=!this.$store.state.dd;
-            if(this.da2!=id.id){
-                this.da2=id.id
-                this.name=id.name
-                this.attr1=id.property[0].attr1;
-                this.attr2=id.property[0].attr2;
-                this.attr3=id.property[0].attr3;
-                this.sort=id.sort;
-                 this.$store.state.dd=false;  
-            }else{
-                this.property.attr1=this.attr1;
-            this.property.attr2=this.attr2;
-            this.property.attr3=this.attr3;
- var ca=JSON.stringify(this.property);
-                axios({
-                    headers: {
-        'Content-Type':'application/x-www-form-urlencoded'
-                     },
-                method:'post',
-                url:this.$store.state.http+'/update',
-                data:Qs.stringify({
-                    id:id.id,
-                    name:this.name,
-                    property:ca,
-                    sort:this.sort,
-                }),
-               responseType:'json',
-                transformResponse:(data)=> {
-                    console.log(data)
-                    this.name=''
-                this.attr1=''
-                this.attr2=''
-                this.attr3=''
-                this.da2=''
-                    this.da=[
-                    {"name":"名称","property":"{\"attr1\":\"属性1\",\"attr2\":\"属性2\",\"attr3\":\"属性3\"}","sort":"排序值"},
-                ];
-                this.login();
-               },
-            })
-            }
-        },
-        shanc(id){
-            this.$store.state.dd=!this.$store.state.dd;
+                    shanc(id){
+                        this.$store.state.dd=!this.$store.state.dd;
             if(id==null){
                 this.shan=!this.shan;
-                  this.$store.state.dd=false;
+                this.$store.state.dd=!this.$store.state.dd;
             }else if(confirm("亲，您确定删除吗？")){
                  this.shan=!this.shan;
                 axios({
                 method:'get',
-                url:this.$store.state.http+'/delect?id='+id,
+                url:this.$store.state.http+'/delect1?id='+id,
                 params:{
                 },
                responseType:'json',
@@ -134,13 +73,15 @@ import Qs from 'qs'
                 this.login();
                },
                 })
+            }else{
+ this.$store.state.dd=!this.$store.state.dd;
             }
         },
         dele(id){
-            this.$store.state.dd=!this.$store.state.dd;
+             this.$store.state.dd=!this.$store.state.dd;
                         axios({
                 method:'get',
-                url:this.$store.state.http+'/hide?id='+id,
+                url:this.$store.state.http+'/hide1?id='+id,
                 params:{
                 },
                responseType:'json',
@@ -154,10 +95,10 @@ import Qs from 'qs'
                 })
         },
         dele1(id){
-            this.$store.state.dd=!this.$store.state.dd;
+             this.$store.state.dd=!this.$store.state.dd;
                         axios({
                 method:'get',
-                url:this.$store.state.http+'/display?id='+id,
+                url:this.$store.state.http+'/display1?id='+id,
                 params:{
                 },
                responseType:'json',
@@ -170,22 +111,61 @@ import Qs from 'qs'
                },
                 })
         },
-        into(i){
-            this.$store.state.dd=!this.$store.state.dd;
-            this.property.attr1=this.attr1;
-            this.property.attr2=this.attr2;
-            this.property.attr3=this.attr3;
-            if(i==2){
-                var ca=JSON.stringify(this.property);
+            login1(id){
+                 this.$store.state.dd=!this.$store.state.dd;
+                if(this.da2!=id.id){
+                this.sid=id.category_id;
+                this.da2=id.id;
+                this.name=id.name
+                this.attr2=id.sale_num;
+                this.attr3=id.content;
+                this.sort=id.sort;
+                 this.$store.state.dd=!this.$store.state.dd;
+            }else{
                 axios({
                     headers: {
         'Content-Type':'application/x-www-form-urlencoded'
                      },
                 method:'post',
-                url:this.$store.state.http+'/create',
+                url:this.$store.state.http+'/change',
+                data:Qs.stringify({
+                    id:this.da2,
+                    name:this.name,
+                    category_id:this.sid,
+                    sale_num:this.attr2,
+                    content:this.attr3,
+                    sort:this.sort,
+                }),
+               responseType:'json',
+                transformResponse:(data)=> {
+                    console.log(data)
+                    this.name=''
+                this.attr1=''
+                this.attr2=''
+                this.attr3=''
+                this.da2=''
+                    this.da=[
+this.da= {"name":"名称","category_name":"分类","sale_num":"销量","content":"备注","sort":"排序值"}
+                ];
+                this.login4();
+               },
+            })
+            }
+            },
+            loginn(i){
+                 this.$store.state.dd=!this.$store.state.dd;
+         if(i==2){
+                axios({
+                    headers: {
+        'Content-Type':'application/x-www-form-urlencoded'
+                     },
+                method:'post',
+                url:this.$store.state.http+'/create1',
                 data:Qs.stringify({
                     name:this.name,
-                    property:ca,
+                    category_id:this.sid,
+                    sale_num:this.attr2,
+                    content:this.attr3,
                     sort:this.sort,
                     status:this.status,
                 }),
@@ -196,27 +176,53 @@ import Qs from 'qs'
                 this.attr2=''
                 this.attr3=''
                     this.da1=i;
-                    this.da=[
-                    {"name":"名称","property":"{\"attr1\":\"属性1\",\"attr2\":\"属性2\",\"attr3\":\"属性3\"}","sort":"排序值"},
-                ];
-                this.login();
+this.da= [{"name":"名称","category_name":"分类","sale_num":"销量","content":"备注","sort":"排序值"}];
+                this.login4();
                },
             })
             }else if(this.da1==1){
                 this.da1=0;
-                this.$store.state.dd=false;
+                 this.$store.state.dd=!this.$store.state.dd;
             }else{
                  this.da1=i;
-                 this.$store.state.dd=false;
+                  this.$store.state.dd=!this.$store.state.dd;
             }
+            },
+             login4(){
+                axios({
+                method:'get',
+                url:this.$store.state.http+'/hello',
+                params:{
+                },
+               responseType:'json',
+                transformResponse:(data)=> {
+                    this.da= [{"name":"名称","category_name":"分类","sale_num":"销量","content":"备注","sort":"排序值"}];
+                      for(var i=0;i<data.length;i++){
+                        this.da[i+1]=data[i];
+                    }
+                     this.$store.state.dd=false;
+               },
+            })
+        },
+         login(){
+                axios({
+                method:'get',
+                url:this.$store.state.http+'/hello1',
+                params:{
+                },
+               responseType:'json',
+                transformResponse:(data)=> {
+                    this.da3=data;
+                     this.$store.state.dd=false;
+               },
+            })
         },
         },
         data() {
             return {
-                da:[
-                    {"name":"名称","property":"{\"attr1\":\"属性1\",\"attr2\":\"属性2\",\"attr3\":\"属性3\"}","sort":"排序值"},
-                ],
+                da:[],
                 da1:0,
+                da3:[],
                 name:'',
                 attr1:'',
                 attr2:'',
@@ -226,6 +232,7 @@ import Qs from 'qs'
                 property:{"attr1":"","attr2":"","attr3":""},
                 shan:true,
                 da2:0,
+                sid:'',
                 }
             },
     }

@@ -10,24 +10,29 @@ const routes = [
     component: () => import( '../views/wechat.vue')
   },
   {
-    path: '/maillist',
-    name: 'maillist',
-    component: () => import( '../views/maillist1.vue')
+    path:'/ping',
+    name: 'ping',
+    component: () => import( '../views/ping.vue')
   },
   {
-    path: '/find',
-    name: 'find',
-    component: () => import( '../views/find.vue')
+    path:'/stock',
+    name: 'stock',
+    component: () => import( '../views/stock.vue')
   },
   {
-    path: '/i',
-    name: 'i',
-    component: () => import( '../views/i.vue')
+    path:'/stocks',
+    name: 'stocks',
+    component: () => import( '../views/stocks.vue')
   },
   {
-    path: '/home',
-    name: 'home',
-    component: () => import( '../views/Home.vue')
+    path:'/details',
+    name: 'details',
+    component: () => import( '../views/details.vue')
+  },
+  {
+    path:'/logo',
+    name: 'logo',
+    component: () => import( '../views/logo.vue')
   },
   // {
   //   path: '/about',
